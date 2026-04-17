@@ -1,6 +1,8 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
 import { loginService, registerService } from "../services/authService.ts";
+import jwt from "jsonwebtoken";
+import type { JwtPayload } from "../types.ts";
 
 const authRouter: Router = Router();
 
@@ -10,11 +12,24 @@ authRouter.post("/login", async (req: Request, res: Response) => {
 
     const user = await loginService({ email: email, password: password });
 
-    return res.status(200).json({
+    const payload: JwtPayload = {
+      id: user.id,
+      email: user.email,
+    };
+    const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
+      expiresIn: "7d",
+    });
+
+    return res.status(201).json({
       msg: "Login success",
       user: { id: user.id, name: user.name, email: user.email }, // TODO just for testing in terminal remove later
+      token,
     });
-  } catch (e) {}
+  } catch (e) {
+    return res.status(400).json({
+      msg: "Invalid email or password",
+    });
+  }
 });
 
 authRouter.post("/register", async (req: Request, res: Response) => {
@@ -23,6 +38,11 @@ authRouter.post("/register", async (req: Request, res: Response) => {
   if (!name || !email || !password || !role) {
     return res.status(400).json({
       err: "Missing required fields",
+    });
+  }
+  if (password.length < 6) {
+    return res.status(400).json({
+      err: "Password must be at least 6 characters",
     });
   }
 
@@ -39,7 +59,7 @@ authRouter.post("/register", async (req: Request, res: Response) => {
       role: role as "client" | "freelancer",
     });
 
-    return res.status(200).json({
+    return res.status(201).json({
       msg: "success",
       user: user, // TODO remove later
     });
