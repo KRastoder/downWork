@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: downWork-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: downWork
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5437:5432"
+    volumes:
+      - downwork_pgdata:/var/lib/postgresql/data
+
+volumes:
+  downwork_pgdata:
