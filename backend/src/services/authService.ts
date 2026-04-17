@@ -62,3 +62,27 @@ export async function loginService({
     throw e;
   }
 }
+
+export async function getMeService({ userId }: { userId: number }) {
+  try {
+    const [user] = await db
+      .select({
+        id: usersTable.id,
+        name: usersTable.name,
+        email: usersTable.email,
+        role: usersTable.role,
+      })
+      .from(usersTable)
+      .where(eq(usersTable.id, userId))
+      .limit(1);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    return user;
+  } catch (e) {
+    console.error("getMe service error", e);
+    throw e;
+  }
+}

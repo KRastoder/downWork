@@ -3,9 +3,13 @@ import type { Request, Response } from "express";
 import { loginService, registerService } from "../services/authService.ts";
 import jwt from "jsonwebtoken";
 import type { JwtPayload } from "../types.ts";
+import { authMiddleware } from "../middleware/authMiddleware.ts";
+import type { AuthRequest } from "../middleware/authMiddleware.ts";
+import { getMeService } from "../services/authService.ts";
 
 const authRouter: Router = Router();
 
+// api/auth/login
 authRouter.post("/login", async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
@@ -14,7 +18,6 @@ authRouter.post("/login", async (req: Request, res: Response) => {
 
     const payload: JwtPayload = {
       id: user.id,
-      email: user.email,
     };
     const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
       expiresIn: "7d",
@@ -32,6 +35,7 @@ authRouter.post("/login", async (req: Request, res: Response) => {
   }
 });
 
+// api/auth/register
 authRouter.post("/register", async (req: Request, res: Response) => {
   const { name, email, password, role } = req.body;
 
@@ -69,4 +73,23 @@ authRouter.post("/register", async (req: Request, res: Response) => {
   }
 });
 
-export default authRouter;
+// api/auth/me
+authRouter.get(
+  "/me",
+  authMiddleware,
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const userId = req.user!.id;
+
+      const user = await getMeService({ userId });
+
+      return res.status(200).json({
+        user,
+      });
+    } catch (e) {
+      return res.status(500).json({
+        msg: "Internal server error",
+      });
+    }
+  },
+);
