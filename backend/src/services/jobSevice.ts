@@ -1,6 +1,7 @@
 import db from "../index.ts";
-import { jobsTable } from "../db/schemas/jobs-schema.ts";
-import { eq } from "drizzle-orm";
+import { jobsTable, proposalsTable } from "../db/schemas/jobs-schema.ts";
+import { usersTable } from "../db/schemas/user-schema.ts";
+import { eq, and } from "drizzle-orm";
 export async function createJob({
   title,
   description,
@@ -57,4 +58,72 @@ export async function deleteJobById(id: number, userId: number) {
   }
 
   await db.delete(jobsTable).where(eq(jobsTable.id, id));
+}
+
+export async function createJobProposal(
+  userId: number,
+  jobId: number,
+  bid: number,
+  estimatedDays: number,
+  coverLetter: string,
+) {
+  const [job] = await db
+    .select()
+    .from(jobsTable)
+    .where(eq(jobsTable.id, jobId))
+    .limit(1);
+
+  if (!job) {
+    throw new Error("Job not found");
+  }
+
+  const [user] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.id, userId))
+    .limit(1);
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  if (user.role !== "freelancer") {
+    throw new Error("Only freelancers can make proposals");
+  }
+
+  if (bid <= 0) {
+    throw new Error("Bid must be greater than 0");
+  }
+
+  if (estimatedDays <= 0) {
+    throw new Error("Estimated days must be greater than 0");
+  }
+
+  const existingProposal = await db
+    .select()
+    .from(proposalsTable)
+    .where(
+      and(
+        eq(proposalsTable.jobId, jobId),
+        eq(proposalsTable.freelancerId, userId),
+      ),
+    )
+    .limit(1);
+
+  if (existingProposal.length > 0) {
+    throw new Error("You already applied to this job");
+  }
+
+  const [proposal] = await db
+    .insert(proposalsTable)
+    .values({
+      estamatedDays: estimatedDays,
+      bid,
+      freelancerId: userId,
+      jobId,
+      coverLetter,
+    })
+    .returning();
+
+  return proposal;
 }

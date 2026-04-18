@@ -50,7 +50,7 @@ authRouter.post("/register", async (req: Request, res: Response) => {
     });
   }
 
-  if (role !== "client" && role !== "freelancer") {
+  if (role !== "client" || role !== "freelancer") {
     return res.status(400).json({
       err: "Role is not valid",
     });

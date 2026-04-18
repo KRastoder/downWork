@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 
 export interface AuthRequest extends Request {
   user?: { id: number };
+  role?: { role: number };
 }
 
 export const authMiddleware = (
