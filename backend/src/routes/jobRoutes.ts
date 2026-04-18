@@ -3,7 +3,7 @@ import type { Response, Request } from "express";
 import { authMiddleware } from "../middleware/authMiddleware.ts";
 const jobRouter: Router = Router();
 import type { AuthRequest } from "../middleware/authMiddleware.ts";
-import { createJob, getJobById } from "../services/jobSevice.ts";
+import { createJob, deleteJobById, getJobById } from "../services/jobSevice.ts";
 
 //TODO ADD ROLE MIDDLEWARE IF NOT RECRUITER THEN SEND UNOTHORIZED
 jobRouter.post(
@@ -50,5 +50,30 @@ jobRouter.get("/jobs/:id", async (req: Request, res: Response) => {
     return res.status(500).json({ err: "could not find a job by id" });
   }
 });
+jobRouter.delete(
+  "/delete-jobs/:id",
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const userId = req.user!.id;
+
+      if (!id || !userId) {
+        return res.status(400).json({ msg: "Missing id or unothorized" });
+      }
+
+      const jobId = Number(id);
+
+      if (isNaN(jobId)) {
+        throw new Error("id must be a number");
+      }
+
+      await deleteJobById(jobId, userId);
+
+      return res.status(200).json({ msg: "Job deleted" });
+    } catch (e) {
+      return res.status(500).json({ msg: "Internal server error" });
+    }
+  },
+);
 
 export default jobRouter;

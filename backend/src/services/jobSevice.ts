@@ -41,3 +41,20 @@ export async function getJobById(id: number) {
     throw e;
   }
 }
+export async function deleteJobById(id: number, userId: number) {
+  const [job] = await db
+    .select()
+    .from(jobsTable)
+    .where(eq(jobsTable.id, id))
+    .limit(1);
+
+  if (!job) {
+    throw new Error("Job not found");
+  }
+
+  if (job.recruiterId !== userId) {
+    throw new Error("Unothorized");
+  }
+
+  await db.delete(jobsTable).where(eq(jobsTable.id, id));
+}
