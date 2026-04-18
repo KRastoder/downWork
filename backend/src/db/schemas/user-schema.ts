@@ -6,7 +6,7 @@ import {
   pgEnum,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-import { jobsTable } from "./jobs-schema.ts";
+import { jobsTable, proposalsTable } from "./jobs-schema.ts";
 
 export const roleEnum = pgEnum("role", ["client", "freelancer"]);
 
@@ -21,4 +21,5 @@ export const usersTable = pgTable("users", {
 
 export const usersRelations = relations(usersTable, ({ many }) => ({
   jobs: many(jobsTable),
+  proposals: many(proposalsTable),
 }));

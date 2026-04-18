@@ -52,6 +52,7 @@ jobRouter.get("/jobs/:id", async (req: Request, res: Response) => {
 });
 jobRouter.delete(
   "/delete-jobs/:id",
+  authMiddleware,
   async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params;
