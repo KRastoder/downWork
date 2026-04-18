@@ -18,7 +18,7 @@ export const jobsTable = pgTable("jobs", {
     .references(() => usersTable.id),
   title: varchar("title").notNull(),
   description: text("description").notNull(),
-  password: varchar("password").notNull(),
+  budget: integer("budget").notNull(),
   avalability: boolean("avalability").default(true).notNull(),
 });
 
