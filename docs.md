@@ -12,12 +12,26 @@ backend api routes :
         expects jwt bearer token
 
     
- UserRoutes : 
+UserRoutes : 
     
-    GET /user/getUser/:id // Used to get userData by id 
+    GET /api/user/getUser/:id // Used to get userData by id 
         expects id 
         returns email name role and id 
     
-    GET /user/my-user-profile //I wonder what this does
+    GET /api/user/my-user-profile //I wonder what this does
         expects jwt token 
-        returns id name and role
+        returns id name and role 
+
+    
+JobRoutes:
+    
+    POST "api/jobs/create-job", // CREATES A JOB
+            expects jwt token id with role as client 
+            body :  title:string , description:string budget:number 
+
+    GET "api/jobs/jobs/:id", gets job by id 
+        expects id:number in slug 
+        returns job
+
+  
+
