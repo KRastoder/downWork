@@ -11,3 +11,10 @@ backend api routes :
     GET /api/auth/me
         expects jwt bearer token
 
+    
+ UserRoutes : 
+    
+    GET user/getUser/:id // Used to get userData by id 
+        expects id 
+        returns email name and id 
+    
