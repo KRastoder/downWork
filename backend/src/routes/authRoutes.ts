@@ -93,3 +93,4 @@ authRouter.get(
     }
   },
 );
+export default authRouter;

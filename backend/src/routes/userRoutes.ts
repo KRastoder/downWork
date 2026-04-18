@@ -14,11 +14,11 @@ userRouter.get("/getUser/:id", async (req: Request, res: Response) => {
 
     return res.status(200).json({ user });
   } catch (e) {
-    return res.status(500).json({ msg: "failed to get user " });
+    return res.status(500).json({ msg: "failed to get user" });
   }
 });
 
-userRouter.get("/me", async (req: AuthRequest, res: Response) => {
+userRouter.get("/my-user-profile", async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user!.id;
 
@@ -28,8 +28,9 @@ userRouter.get("/me", async (req: AuthRequest, res: Response) => {
       user,
     });
   } catch (e) {
+    console.error(e);
     return res.status(500).json({
-      msg: "Internal server error",
+      msg: `${e}`,
     });
   }
 });
