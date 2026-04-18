@@ -14,7 +14,10 @@ backend api routes :
     
  UserRoutes : 
     
-    GET user/getUser/:id // Used to get userData by id 
+    GET /user/getUser/:id // Used to get userData by id 
         expects id 
-        returns email name and id 
+        returns email name role and id 
     
+    GET /user/my-user-profile //I wonder what this does
+        expects jwt token 
+        returns id name and role
