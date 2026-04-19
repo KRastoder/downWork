@@ -36,7 +36,8 @@ jobRouter.post(
       budget: budgetNumber,
       recruiterId,
     });
-    return res.status(201).json(jobId);
+
+    return res.status(201).json({ msg: "job created" });
   },
 );
 

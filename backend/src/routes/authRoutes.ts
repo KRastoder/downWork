@@ -6,6 +6,7 @@ import type { JwtPayload } from "../types.ts";
 import { authMiddleware } from "../middleware/authMiddleware.ts";
 import type { AuthRequest } from "../middleware/authMiddleware.ts";
 import { getMeService } from "../services/authService.ts";
+import { freelancersOnlyMiddleware } from "../middleware/roleMiddleware.ts";
 
 const authRouter: Router = Router();
 
@@ -51,11 +52,6 @@ authRouter.post("/register", async (req: Request, res: Response) => {
     });
   }
 
-  if (role !== "client" || role !== "freelancer") {
-    return res.status(400).json({
-      err: "Role is not valid",
-    });
-  }
   try {
     const user = await registerService({
       name,
@@ -78,6 +74,7 @@ authRouter.post("/register", async (req: Request, res: Response) => {
 authRouter.get(
   "/me",
   authMiddleware,
+  freelancersOnlyMiddleware,
   async (req: AuthRequest, res: Response) => {
     try {
       const userId = req.user!.id;

@@ -11,7 +11,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRouter);
 
-app.use("/api/user", authMiddleware, userRouter);
+app.use("/api/user", userRouter);
 
 app.use("/api/jobs", jobRouter);
 

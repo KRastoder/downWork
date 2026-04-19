@@ -29,7 +29,7 @@ JobRoutes:
 
     POST "api/jobs/create-job", // CREATES A JOB
             expects jwt token id with role as client 
-            body :  title:string , description:string budget:number 
+            body : title:string , description:string budget:number 
     
     GET "api/jobs/jobs/:id", gets job by id 
         expects id:number in slug 

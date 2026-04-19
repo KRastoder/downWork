@@ -4,7 +4,7 @@ import db from "../index.ts";
 
 export async function getUserById(id: number) {
   try {
-    const user = await db
+    const [user] = await db
       .select({
         id: usersTable.id,
         name: usersTable.name,
@@ -13,6 +13,10 @@ export async function getUserById(id: number) {
       .from(usersTable)
       .where(eq(usersTable.id, id))
       .limit(1);
+
+    if (!user) {
+      throw new Error("user by that id does not exist");
+    }
     return user;
   } catch (e) {
     console.error("get user by id error in user service", e);
