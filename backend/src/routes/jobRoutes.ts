@@ -10,7 +10,6 @@ import {
   getJobById,
 } from "../services/jobSevice.ts";
 
-//TODO ADD ROLE MIDDLEWARE IF NOT RECRUITER THEN SEND UNOTHORIZED
 jobRouter.post(
   "/create-job",
   authMiddleware,

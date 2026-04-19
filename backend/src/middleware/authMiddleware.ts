@@ -1,9 +1,10 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import type { JwtPayload, Role } from "../types.ts";
 
 export interface AuthRequest extends Request {
   user?: { id: number };
-  role?: { role: number };
+  role?: Role;
 }
 
 export const authMiddleware = (
@@ -20,11 +21,10 @@ export const authMiddleware = (
   const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
-      id: number;
-    };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
 
     req.user = { id: decoded.id };
+    req.role = decoded.role;
 
     next();
   } catch (err) {

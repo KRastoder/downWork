@@ -16,7 +16,7 @@ app.use("/api/user", authMiddleware, userRouter);
 app.use("/api/jobs", jobRouter);
 
 app.get("/", (req: Request, res: Response) => {
-  res.json({ msg: "HOME PAGE" });
+  res.json({ msg: "WORKING" });
 });
 
 app.listen("3000", () => {
