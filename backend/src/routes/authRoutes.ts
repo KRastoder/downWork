@@ -91,6 +91,5 @@ authRouter.get(
     }
   },
 );
-const ligma = "Sigma";
 
 export default authRouter;

@@ -7,8 +7,13 @@ import {
   createJob,
   createJobProposal,
   deleteJobById,
+  getAllProposalsByJobId,
   getJobById,
 } from "../services/jobSevice.ts";
+import {
+  clientOnlyMiddleware,
+  freelancersOnlyMiddleware,
+} from "../middleware/roleMiddleware.ts";
 
 jobRouter.post(
   "/create-job",
@@ -86,6 +91,7 @@ jobRouter.delete(
 jobRouter.post(
   "/proposals/:jobId",
   authMiddleware,
+  freelancersOnlyMiddleware,
   async (req: AuthRequest, res: Response) => {
     try {
       const jobId = req.params;
@@ -112,6 +118,34 @@ jobRouter.post(
       );
 
       return res.status(200).json({ msg: "Proposal created", proposal }); // Remove proposal later TODO
+    } catch (e) {
+      return res.status(500).json({ msg: "Iternal server error" });
+    }
+  },
+);
+
+jobRouter.get(
+  "/my-proposals/:jobId",
+  authMiddleware,
+  clientOnlyMiddleware,
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const jobId = Number(req.params);
+      const id = req.user!.id;
+
+      if (!jobId) {
+        return res.status(400).json({ msg: "missing jobId" });
+      }
+
+      if (isNaN(jobId)) {
+        return res.status(400).json({ msg: "Job id must be a number" });
+      }
+
+      const proposals = await getAllProposalsByJobId(jobId, id);
+
+      return res.status(400).json({
+        proposals,
+      });
     } catch (e) {
       return res.status(500).json({ msg: "Iternal server error" });
     }

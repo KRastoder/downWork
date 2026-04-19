@@ -127,3 +127,26 @@ export async function createJobProposal(
 
   return proposal;
 }
+export async function getAllProposalsByJobId(jobId: number, userId: number) {
+  try {
+    const [job] = await db
+      .select()
+      .from(jobsTable)
+      .where(eq(jobsTable.id, jobId));
+
+    if (!job) {
+      throw new Error("Job not found");
+    }
+    if (job.recruiterId !== userId) {
+      throw new Error("Forbitten");
+    }
+    const proposals = await db
+      .select()
+      .from(proposalsTable)
+      .where(eq(proposalsTable.jobId, jobId));
+
+    return proposals;
+  } catch (e) {
+    console.error("get all proposals service error!", e);
+  }
+}
