@@ -58,6 +58,25 @@ export const proposalsTable = pgTable(
   }),
 );
 
+export const contractsTable = pgTable(
+  "contracts",
+  {
+    id: integer().primaryKey().generatedAlwaysAsIdentity().notNull(),
+    jobId: integer("job_id")
+      .notNull()
+      .references(() => jobsTable.id, { onDelete: "cascade" }),
+    proposalId: integer("proposal_id")
+      .notNull()
+      .references(() => proposalsTable.id),
+  },
+  (table) => ({
+    uniqueProposal: uniqueIndex("unique_contract").on(
+      table.jobId,
+      table.proposalId,
+    ),
+  }),
+);
+
 //RELATIONS
 export const jobsRelations = relations(jobsTable, ({ one, many }) => ({
   recruiter: one(usersTable, {
@@ -66,6 +85,10 @@ export const jobsRelations = relations(jobsTable, ({ one, many }) => ({
   }),
   tags: many(jobTagsTable),
   proposals: many(proposalsTable),
+  contract: one(contractsTable, {
+    fields: [jobsTable.id],
+    references: [contractsTable.jobId],
+  }),
 }));
 
 export const jobTagsRelations = relations(jobTagsTable, ({ one }) => ({
@@ -82,5 +105,20 @@ export const proposalsRelations = relations(proposalsTable, ({ one }) => ({
   freelancer: one(usersTable, {
     fields: [proposalsTable.freelancerId],
     references: [usersTable.id],
+  }),
+  contract: one(contractsTable, {
+    fields: [proposalsTable.id],
+    references: [contractsTable.proposalId],
+  }),
+}));
+
+export const contractRelations = relations(contractsTable, ({ one }) => ({
+  job: one(jobsTable, {
+    fields: [contractsTable.jobId],
+    references: [jobsTable.id],
+  }),
+  proposal: one(proposalsTable, {
+    fields: [contractsTable.proposalId],
+    references: [proposalsTable.id],
   }),
 }));
