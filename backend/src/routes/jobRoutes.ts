@@ -9,7 +9,9 @@ import {
   createJobProposal,
   deleteJobById,
   getAllProposalsByJobId,
+  getContractById,
   getJobById,
+  showMyContracts,
 } from "../services/jobSevice.ts";
 import {
   clientOnlyMiddleware,
@@ -185,6 +187,53 @@ jobRouter.post(
 
         if (e.message === "Contract already exists") {
           return res.status(409).json({ msg: e.message });
+        }
+
+        if (e.message === "Unauthorized") {
+          return res.status(403).json({ msg: e.message });
+        }
+      }
+
+      return res.status(500).json({ msg: "Internal server error" });
+    }
+  },
+);
+jobRouter.get(
+  "/contracts",
+  authMiddleware,
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const userId = req.user!.id;
+      const contracts = await showMyContracts(userId);
+      return res.status(200).json({ contracts });
+    } catch (e) {
+      return res.status(500).json({ msg: "Internal server error" });
+    }
+  },
+);
+jobRouter.get(
+  "/contracts/:id",
+  authMiddleware,
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const userId = req.user!.id;
+      const contractId = Number(req.params.id);
+
+      if (isNaN(contractId)) {
+        return res.status(400).json({ msg: "Invalid contract id" });
+      }
+
+      const data = await getContractById(contractId, userId);
+
+      return res.status(200).json({
+        contract: data.contract,
+        job: data.job,
+        proposal: data.proposal,
+      });
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        if (e.message === "Contract not found") {
+          return res.status(404).json({ msg: e.message });
         }
 
         if (e.message === "Unauthorized") {

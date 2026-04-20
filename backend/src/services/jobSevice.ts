@@ -5,7 +5,7 @@ import {
   proposalsTable,
 } from "../db/schemas/jobs-schema.ts";
 import { usersTable } from "../db/schemas/user-schema.ts";
-import { eq, and } from "drizzle-orm";
+import { eq, and, or } from "drizzle-orm";
 export async function createJob({
   title,
   description,
@@ -208,4 +208,60 @@ export async function createContract(clientId: number, proposalId: number) {
     .where(eq(jobsTable.id, job.id));
 
   return contract;
+}
+
+export async function showMyContracts(userId: number) {
+  const contracts = await db
+    .select()
+    .from(contractsTable)
+    .innerJoin(jobsTable, eq(contractsTable.jobId, jobsTable.id))
+    .innerJoin(proposalsTable, eq(contractsTable.proposalId, proposalsTable.id))
+    .where(
+      or(
+        eq(jobsTable.recruiterId, userId),
+        eq(proposalsTable.freelancerId, userId),
+      ),
+    );
+
+  return contracts;
+}
+export async function getContractById(contractId: number, userId: number) {
+  const [contract] = await db
+    .select()
+    .from(contractsTable)
+    .where(eq(contractsTable.id, contractId))
+    .limit(1);
+
+  if (!contract) {
+    throw new Error("Contract not found");
+  }
+
+  const [job] = await db
+    .select()
+    .from(jobsTable)
+    .where(eq(jobsTable.id, contract.jobId))
+    .limit(1);
+
+  const [proposal] = await db
+    .select()
+    .from(proposalsTable)
+    .where(eq(proposalsTable.id, contract.proposalId))
+    .limit(1);
+
+  if (!job || !proposal) {
+    throw new Error("Related data not found");
+  }
+
+  const isClient = job.recruiterId === userId;
+  const isFreelancer = proposal.freelancerId === userId;
+
+  if (!isClient && !isFreelancer) {
+    throw new Error("Unauthorized");
+  }
+
+  return {
+    contract,
+    job,
+    proposal,
+  };
 }
