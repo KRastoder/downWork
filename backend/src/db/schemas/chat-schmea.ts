@@ -30,6 +30,7 @@ export const chatMembersTable = pgTable(
   }),
 );
 
+//RELATIONS
 export const chatsRelations = relations(chatsTable, ({ many }) => ({
   members: many(chatMembersTable),
   messages: many(messagesTable),
