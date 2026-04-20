@@ -198,6 +198,7 @@ jobRouter.post(
     }
   },
 );
+
 jobRouter.get(
   "/contracts",
   authMiddleware,
@@ -211,6 +212,7 @@ jobRouter.get(
     }
   },
 );
+
 jobRouter.get(
   "/contracts/:id",
   authMiddleware,

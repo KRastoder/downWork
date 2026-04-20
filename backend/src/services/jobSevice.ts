@@ -225,6 +225,7 @@ export async function showMyContracts(userId: number) {
 
   return contracts;
 }
+
 export async function getContractById(contractId: number, userId: number) {
   const [contract] = await db
     .select()
