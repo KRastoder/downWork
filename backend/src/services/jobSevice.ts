@@ -174,12 +174,32 @@ export async function createContract(clientId: number, proposalId: number) {
   if (!job) {
     throw new Error("Job not found");
   }
+
   if (job.recruiterId !== clientId) {
     throw new Error("Unauthorized");
   }
+
+  const [existing] = await db
+    .select()
+    .from(contractsTable)
+    .where(
+      and(
+        eq(contractsTable.jobId, job.id),
+        eq(contractsTable.proposalId, proposalId),
+      ),
+    )
+    .limit(1);
+
+  if (existing) {
+    throw new Error("Contract already exists");
+  }
+
   const [contract] = await db
     .insert(contractsTable)
-    .values({ jobId: job.id, proposalId: proposalId })
+    .values({
+      jobId: job.id,
+      proposalId,
+    })
     .returning();
 
   await db

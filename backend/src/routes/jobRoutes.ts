@@ -183,6 +183,10 @@ jobRouter.post(
           return res.status(404).json({ msg: e.message });
         }
 
+        if (e.message === "Contract already exists") {
+          return res.status(409).json({ msg: e.message });
+        }
+
         if (e.message === "Unauthorized") {
           return res.status(403).json({ msg: e.message });
         }
