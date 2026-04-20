@@ -4,6 +4,7 @@ import { authMiddleware } from "../middleware/authMiddleware.ts";
 const jobRouter: Router = Router();
 import type { AuthRequest } from "../middleware/authMiddleware.ts";
 import {
+  createContract,
   createJob,
   createJobProposal,
   deleteJobById,
@@ -94,7 +95,7 @@ jobRouter.post(
   freelancersOnlyMiddleware,
   async (req: AuthRequest, res: Response) => {
     try {
-      const jobId = req.params;
+      const jobId = Number(req.params.jobId);
       const id = req.user!.id;
       const { bid, estimatedDays, coverLetter } = req.body;
 
@@ -148,6 +149,46 @@ jobRouter.get(
       });
     } catch (e) {
       return res.status(500).json({ msg: "Iternal server error" });
+    }
+  },
+);
+
+jobRouter.post(
+  "/contracts",
+  authMiddleware,
+  clientOnlyMiddleware,
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const clientId = req.user!.id;
+      const proposalId = Number(req.body.proposalId);
+
+      if (isNaN(proposalId)) {
+        return res.status(400).json({ msg: "Invalid proposalId" });
+      }
+
+      const contract = await createContract(clientId, proposalId);
+
+      return res.status(201).json({
+        msg: "Contract created",
+        contract,
+      });
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.error(e);
+        if (e.message === "Proposal not found") {
+          return res.status(404).json({ msg: e.message });
+        }
+
+        if (e.message === "Job not found") {
+          return res.status(404).json({ msg: e.message });
+        }
+
+        if (e.message === "Unauthorized") {
+          return res.status(403).json({ msg: e.message });
+        }
+      }
+
+      return res.status(500).json({ msg: "Internal server error" });
     }
   },
 );

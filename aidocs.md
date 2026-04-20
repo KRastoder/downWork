@@ -160,9 +160,7 @@ Authorization: Bearer <token>
 Body:
 {
   "bid": number,
-  "estimatedDays": number,
-  "coverLetter": "string"
-}
+  "estimatedDays": number, "coverLetter": "string" }
 
 Response:
 {

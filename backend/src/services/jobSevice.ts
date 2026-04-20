@@ -1,5 +1,9 @@
 import db from "../index.ts";
-import { jobsTable, proposalsTable } from "../db/schemas/jobs-schema.ts";
+import {
+  contractsTable,
+  jobsTable,
+  proposalsTable,
+} from "../db/schemas/jobs-schema.ts";
 import { usersTable } from "../db/schemas/user-schema.ts";
 import { eq, and } from "drizzle-orm";
 export async function createJob({
@@ -149,4 +153,39 @@ export async function getAllProposalsByJobId(jobId: number, userId: number) {
   } catch (e) {
     console.error("get all proposals service error!", e);
   }
+}
+export async function createContract(clientId: number, proposalId: number) {
+  const [proposal] = await db
+    .select()
+    .from(proposalsTable)
+    .where(eq(proposalsTable.id, proposalId))
+    .limit(1);
+
+  if (!proposal) {
+    throw new Error("Proposal not found");
+  }
+
+  const [job] = await db
+    .select()
+    .from(jobsTable)
+    .where(eq(jobsTable.id, proposal.jobId))
+    .limit(1);
+
+  if (!job) {
+    throw new Error("Job not found");
+  }
+  if (job.recruiterId !== clientId) {
+    throw new Error("Unauthorized");
+  }
+  const [contract] = await db
+    .insert(contractsTable)
+    .values({ jobId: job.id, proposalId: proposalId })
+    .returning();
+
+  await db
+    .update(jobsTable)
+    .set({ avalability: false })
+    .where(eq(jobsTable.id, job.id));
+
+  return contract;
 }

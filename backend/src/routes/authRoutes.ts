@@ -38,6 +38,7 @@ authRouter.post("/login", async (req: Request, res: Response) => {
 });
 
 // api/auth/register
+//TODO FIX if email exists in db return user already exists
 authRouter.post("/register", async (req: Request, res: Response) => {
   const { name, email, password, role } = req.body;
 
@@ -78,7 +79,6 @@ authRouter.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const userId = req.user!.id;
-
       const user = await getMeService({ userId });
 
       return res.status(200).json({
