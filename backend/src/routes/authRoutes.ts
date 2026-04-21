@@ -6,7 +6,6 @@ import type { JwtPayload } from "../types.ts";
 import { authMiddleware } from "../middleware/authMiddleware.ts";
 import type { AuthRequest } from "../middleware/authMiddleware.ts";
 import { getMeService } from "../services/authService.ts";
-import { freelancersOnlyMiddleware } from "../middleware/roleMiddleware.ts";
 
 const authRouter: Router = Router();
 
@@ -75,7 +74,6 @@ authRouter.post("/register", async (req: Request, res: Response) => {
 authRouter.get(
   "/me",
   authMiddleware,
-  freelancersOnlyMiddleware,
   async (req: AuthRequest, res: Response) => {
     try {
       const userId = req.user!.id;
