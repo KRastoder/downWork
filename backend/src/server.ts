@@ -2,10 +2,15 @@ import express from "express";
 import type { Request, Response } from "express";
 import authRouter from "./routes/authRoutes.ts";
 import userRouter from "./routes/userRoutes.ts";
-import { authMiddleware } from "./middleware/authMiddleware.ts";
 import jobRouter from "./routes/jobRoutes.ts";
+import cors from "cors";
 
 const app = express();
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  }),
+);
 
 app.use(express.json());
 

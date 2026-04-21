@@ -1,10 +1,14 @@
-function App() {
+import { Route, Routes } from "react-router"
+import HomePage from "./pages/HomePage"
+import LoginPage from "./pages/auth/LoginPage"
+
+export function App() {
   return (
-    <div className="bg-black text-white">
-      <h1>Hello</h1>
-      <h2>World</h2>
-    </div>
-  );
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/sign-in" element={<LoginPage />} />
+    </Routes>
+  )
 }
 
-export default App;
+export default App
