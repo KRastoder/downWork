@@ -46,6 +46,22 @@ export async function getJobById(id: number) {
     throw e;
   }
 }
+export async function getAllJobs() {
+  const jobs = await db
+    .select({
+      id: jobsTable.id,
+      title: jobsTable.title,
+      description: jobsTable.description,
+      budget: jobsTable.budget,
+      avalability: jobsTable.avalability,
+
+      recruiterName: usersTable.name,
+    })
+    .from(jobsTable)
+    .leftJoin(usersTable, eq(jobsTable.recruiterId, usersTable.id));
+
+  return jobs;
+}
 export async function deleteJobById(id: number, userId: number) {
   const [job] = await db
     .select()

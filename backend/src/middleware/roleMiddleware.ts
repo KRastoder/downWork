@@ -22,7 +22,7 @@ export const freelancersOnlyMiddleware = (
 ) => {
   if (req.role !== "freelancer") {
     return res.status(403).json({
-      msg: "Only clients can access this route",
+      msg: "Only freelancers can access this route",
     });
   }
 

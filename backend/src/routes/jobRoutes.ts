@@ -8,6 +8,7 @@ import {
   createJob,
   createJobProposal,
   deleteJobById,
+  getAllJobs,
   getAllProposalsByJobId,
   getContractById,
   getJobById,
@@ -48,6 +49,19 @@ jobRouter.post(
     return res.status(201).json({ msg: "job created" });
   },
 );
+
+jobRouter.get("/all-jobs", async (req: Request, res: Response) => {
+  try {
+    const jobs = await getAllJobs();
+
+    if (!jobs || jobs.length === 0) {
+      return res.status(404).json({ msg: "No jobs posted" });
+    }
+    return res.status(200).json({ jobs });
+  } catch (e) {
+    return res.status(500).json({ err: "Iternal server error" });
+  }
+});
 
 jobRouter.get("/jobs/:id", async (req: Request, res: Response) => {
   try {
