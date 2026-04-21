@@ -1,5 +1,7 @@
 # Backend API Documentation
 
+---
+
 ## Auth Routes
 
 ### POST /api/auth/register
@@ -20,7 +22,7 @@ Response:
     "id": number,
     "name": "string",
     "email": "string",
-    "role": "client" | "freelancer"
+    "role": "client | freelancer"
   }
 }
 
@@ -59,7 +61,7 @@ Response:
   "user": {
     "id": number,
     "name": "string",
-    "role": "freelancer"
+    "role": "freelancer | client"
   }
 }
 
@@ -68,7 +70,7 @@ Response:
 ## User Routes
 
 ### GET /api/user/getUser/:id
-Returns a user by id.
+Returns user by id.
 
 Response:
 {
@@ -76,14 +78,14 @@ Response:
     "id": number,
     "name": "string",
     "email": "string",
-    "role": "client" | "freelancer"
+    "role": "client | freelancer"
   }
 }
 
 ---
 
 ### GET /api/user/my-user-profile
-Returns the logged-in user.
+Returns logged-in user.
 
 Headers:
 Authorization: Bearer <token>
@@ -94,7 +96,7 @@ Response:
     "id": number,
     "name": "string",
     "email": "string",
-    "role": "client" | "freelancer"
+    "role": "client | freelancer"
   }
 }
 
@@ -103,7 +105,7 @@ Response:
 ## Job Routes
 
 ### POST /api/jobs/create-job
-Creates a job.
+Creates a job (client only).
 
 Headers:
 Authorization: Bearer <token>
@@ -123,7 +125,7 @@ Response:
 ---
 
 ### GET /api/jobs/jobs/:id
-Returns a job by id.
+Returns a single job.
 
 Response:
 {
@@ -134,6 +136,25 @@ Response:
     "budget": number,
     "recruiterId": number
   }
+}
+
+---
+
+### GET /api/jobs/all-jobs
+Returns all jobs with recruiter name.
+
+Response:
+{
+  "jobs": [
+    {
+      "id": number,
+      "title": "string",
+      "description": "string",
+      "budget": number,
+      "avalability": boolean,
+      "recruiterName": "string"
+    }
+  ]
 }
 
 ---
@@ -151,8 +172,10 @@ Response:
 
 ---
 
+## Proposal Routes
+
 ### POST /api/jobs/proposals/:jobId
-Creates a proposal for a job.
+Creates proposal (freelancer only).
 
 Headers:
 Authorization: Bearer <token>
@@ -160,7 +183,9 @@ Authorization: Bearer <token>
 Body:
 {
   "bid": number,
-  "estimatedDays": number, "coverLetter": "string" }
+  "estimatedDays": number,
+  "coverLetter": "string"
+}
 
 Response:
 {
@@ -171,7 +196,7 @@ Response:
 ---
 
 ### GET /api/jobs/my-proposals/:jobId
-Gets all proposals for a job.
+Gets proposals for a job.
 
 Headers:
 Authorization: Bearer <token>
@@ -179,4 +204,51 @@ Authorization: Bearer <token>
 Response:
 {
   "proposals": []
+}
+
+---
+
+## Contract Routes
+
+### POST /api/jobs/contracts
+Creates contract from proposal (client only).
+
+Headers:
+Authorization: Bearer <token>
+
+Body:
+{
+  "proposalId": number
+}
+
+Response:
+{
+  "msg": "Contract created",
+  "contract": {
+    "id": number,
+    "jobId": number,
+    "proposalId": number
+  }
+}
+
+---
+
+### GET /api/jobs/contracts/:id
+Returns full contract details.
+
+Response:
+{
+  "contract": {},
+  "job": {},
+  "proposal": {}
+}
+
+---
+
+### GET /api/jobs/contracts
+Returns all contracts for logged-in user (client or freelancer).
+
+Response:
+{
+  "contracts": []
 }
