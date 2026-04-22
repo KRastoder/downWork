@@ -5,28 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-// ### POST /api/auth/register
-// Creates a new user.
-
-// Body:
-// {
-//   "name": "string",
-//   "email": "string",
-//   "password": "string (min 6 chars)",
-//   "role": "client" | "freelancer"
-// }
-
-// Response:
-// {
-//   "msg": "success",
-//   "user": {
-//     "id": number,
-//     "name": "string",
-//     "email": "string",
-//     "role": "client | freelancer"
-//   }
-// }
-
 export function RegisterPage() {
   const navigate = useNavigate()
 
@@ -55,7 +33,7 @@ export function RegisterPage() {
       const data: { msg?: string; token?: string } = await res.json()
 
       if (!res.ok) {
-        throw new Error(data.msg || "Login failed")
+        throw new Error(data.msg || "Register failed")
       }
 
       if (data.token) {
@@ -75,60 +53,62 @@ export function RegisterPage() {
   }
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle>Register</CardTitle>
-      </CardHeader>
+    <div className="flex min-h-screen items-center justify-center">
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          <CardTitle>Register</CardTitle>
+        </CardHeader>
 
-      <CardContent>
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div className="space-y-1">
-            <Label>Name</Label>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              type="text"
-              required
-            />
-          </div>
+        <CardContent>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-1">
+              <Label>Name</Label>
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                type="text"
+                required
+              />
+            </div>
 
-          <div className="space-y-1">
-            <Label>Email</Label>
-            <Input
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              type="email"
-              required
-            />
-          </div>
+            <div className="space-y-1">
+              <Label>Email</Label>
+              <Input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                type="email"
+                required
+              />
+            </div>
 
-          <div className="space-y-1">
-            <Label>Password</Label>
-            <Input
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              type="password"
-              required
-            />
-          </div>
+            <div className="space-y-1">
+              <Label>Password</Label>
+              <Input
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                type="password"
+                required
+              />
+            </div>
 
-          <div className="space-y-1">
-            <Label>Role</Label>
-            <Input
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              type="text"
-              required
-            />
-          </div>
+            <div className="space-y-1">
+              <Label>Role</Label>
+              <Input
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                type="text"
+                required
+              />
+            </div>
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
+            {error && <p className="text-sm text-red-500">{error}</p>}
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Registring" : "Register"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   )
 }

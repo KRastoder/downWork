@@ -147,6 +147,64 @@ export async function createJobProposal(
 
   return proposal;
 }
+
+export async function getProposalsByFreelancerId(userId: number) {
+  try {
+    const proposals = await db
+      .select({
+        proposalId: proposalsTable.id,
+        bid: proposalsTable.bid,
+        estimatedDays: proposalsTable.estamatedDays,
+        coverLetter: proposalsTable.coverLetter,
+
+        jobId: jobsTable.id,
+        jobTitle: jobsTable.title,
+        jobDescription: jobsTable.description,
+        jobBudget: jobsTable.budget,
+        jobAvailability: jobsTable.avalability,
+      })
+      .from(proposalsTable)
+      .leftJoin(jobsTable, eq(proposalsTable.jobId, jobsTable.id))
+      .where(eq(proposalsTable.freelancerId, userId));
+
+    return proposals;
+  } catch (e) {
+    console.error("get proposals by freelancer error!", e);
+    throw e;
+  }
+}
+export async function getAllProposalsForClient(userId: number) {
+  try {
+    const proposals = await db
+      .select({
+        // proposal data
+        proposalId: proposalsTable.id,
+        bid: proposalsTable.bid,
+        estimatedDays: proposalsTable.estamatedDays,
+        coverLetter: proposalsTable.coverLetter,
+
+        // job data
+        jobId: jobsTable.id,
+        jobTitle: jobsTable.title,
+        jobBudget: jobsTable.budget,
+
+        // freelancer data
+        freelancerId: usersTable.id,
+        freelancerName: usersTable.name,
+        freelancerEmail: usersTable.email,
+      })
+      .from(proposalsTable)
+      .innerJoin(jobsTable, eq(proposalsTable.jobId, jobsTable.id))
+      .innerJoin(usersTable, eq(proposalsTable.freelancerId, usersTable.id))
+      .where(eq(jobsTable.recruiterId, userId));
+
+    return proposals;
+  } catch (e) {
+    console.error("get all client proposals error!", e);
+    throw e;
+  }
+}
+
 export async function getAllProposalsByJobId(jobId: number, userId: number) {
   try {
     const [job] = await db

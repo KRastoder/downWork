@@ -46,6 +46,7 @@ authRouter.post("/register", async (req: Request, res: Response) => {
       err: "Missing required fields",
     });
   }
+
   if (password.length < 6) {
     return res.status(400).json({
       err: "Password must be at least 6 characters",

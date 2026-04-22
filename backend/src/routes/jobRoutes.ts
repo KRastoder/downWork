@@ -10,8 +10,10 @@ import {
   deleteJobById,
   getAllJobs,
   getAllProposalsByJobId,
+  getAllProposalsForClient,
   getContractById,
   getJobById,
+  getProposalsByFreelancerId,
   showMyContracts,
 } from "../services/jobSevice.ts";
 import {
@@ -154,6 +156,33 @@ jobRouter.post(
 );
 
 jobRouter.get(
+  "/my-proposals",
+  authMiddleware,
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const id = req.user!.id;
+      const role = req.role;
+
+      let proposals;
+
+      if (role === "client") {
+        proposals = await getAllProposalsForClient(id);
+      } else {
+        proposals = await getProposalsByFreelancerId(id);
+      }
+
+      return res.status(200).json({
+        proposals,
+        message: proposals.length === 0 ? "No proposals found" : undefined,
+      });
+    } catch (e) {
+      console.error(e);
+      return res.status(500).json({ msg: "Internal server error" });
+    }
+  },
+);
+
+jobRouter.get(
   "/my-proposals/:jobId",
   authMiddleware,
   clientOnlyMiddleware,
@@ -172,7 +201,7 @@ jobRouter.get(
 
       const proposals = await getAllProposalsByJobId(jobId, id);
 
-      return res.status(400).json({
+      return res.status(200).json({
         proposals,
       });
     } catch (e) {

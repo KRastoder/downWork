@@ -47,9 +47,14 @@ export default function Navbar() {
         {isLoggedIn ? (
           <SignOutButton />
         ) : (
-          <a href="/sign-in" className={linkClass}>
-            Sign in
-          </a>
+          <div className="flex items-center">
+            <a href="/sign-in" className={linkClass}>
+              Sign in
+            </a>
+            <a href="/sign-up" className={linkClass}>
+              Register
+            </a>
+          </div>
         )}
       </div>
     </nav>
