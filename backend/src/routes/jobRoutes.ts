@@ -134,8 +134,20 @@ jobRouter.post(
         coverLetter,
       );
 
-      return res.status(200).json({ msg: "Proposal created", proposal }); // Remove proposal later TODO
+      return res.status(200).json({ msg: "Proposal created" }); // Remove proposal later TODO
     } catch (e) {
+      console.error("createJobProposal error:", e);
+
+      if (e instanceof Error) {
+        if (e.message === "You already applied to this job") {
+          return res
+            .status(500)
+            .json({ msg: "You already applied to this job" });
+        }
+        if (e.message === "Bid must be greater than 0") {
+          return res.status(500).json({ msg: "Bid must be greater than 0" });
+        }
+      }
       return res.status(500).json({ msg: "Iternal server error" });
     }
   },

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 
 type Job = {
   id: number
@@ -19,7 +18,7 @@ export default function FindWorkPage() {
   useEffect(() => {
     async function fetchJobs() {
       try {
-        const res = await fetch("http://localhost:3000/api/jobs/all-jobs")
+        const res = await fetch("/api/jobs/all-jobs")
 
         const data = await res.json()
 
@@ -75,12 +74,17 @@ export default function FindWorkPage() {
               </p>
             </CardHeader>
 
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground">{job.description}</p>
 
               <p className="font-medium">Budget: ${job.budget}</p>
 
-              <Button>Apply</Button>
+              <a
+                className="bg-red-800 p-1 outline-2 outline-black hover:cursor-pointer"
+                href={`/propose/${job.id}`}
+              >
+                Apply
+              </a>
             </CardContent>
           </Card>
         ))}
