@@ -45,7 +45,12 @@ export default function Navbar() {
         )}
 
         {isLoggedIn ? (
-          <SignOutButton />
+          <div className="flex items-center">
+            <a href="/my-proposals" className={linkClass}>
+              My proposals
+            </a>
+            <SignOutButton />
+          </div>
         ) : (
           <div className="flex items-center">
             <a href="/sign-in" className={linkClass}>
